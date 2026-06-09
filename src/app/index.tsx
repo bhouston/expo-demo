@@ -27,9 +27,9 @@ export default function TodoListScreen() {
           headerRight: () => (
             <Pressable
               onPress={() => router.push("/settings")}
-              hitSlop={8}
               accessibilityRole="button"
               accessibilityLabel="Open settings"
+              style={styles.settingsButton}
             >
               <Ionicons
                 name="settings-outline"
@@ -110,6 +110,14 @@ const styles = StyleSheet.create({
   separator: {
     height: StyleSheet.hairlineWidth,
     marginLeft: 16,
+  },
+  // Explicit square frame works around off-center header buttons inside the
+  // iOS 26 glass capsule (react-native-screens #2990, fixed natively in 4.21+).
+  settingsButton: {
+    width: 36,
+    height: 36,
+    alignItems: "center",
+    justifyContent: "center",
   },
   empty: {
     alignItems: "center",
