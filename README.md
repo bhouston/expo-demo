@@ -1,6 +1,6 @@
 # Expo TanStack Todo
 
-A simple local-first to-do list app built with [Expo](https://expo.dev) (SDK 56) to demonstrate modern Expo + TanStack best practices. No user account is required — all data lives on the device in AsyncStorage.
+A simple local-first to-do list app built with [Expo](https://expo.dev) (SDK 54, compatible with the current iOS Expo Go) to demonstrate modern Expo + TanStack best practices. No user account is required — all data lives on the device in AsyncStorage.
 
 ## Features
 
@@ -16,7 +16,7 @@ A simple local-first to-do list app built with [Expo](https://expo.dev) (SDK 56)
 
 | Concern | Choice |
 | --- | --- |
-| Framework | Expo SDK 56, expo-router (file-based routing, typed routes) |
+| Framework | Expo SDK 54, expo-router (file-based routing, typed routes) |
 | Language | TypeScript (strict) |
 | Data fetching/cache | TanStack Query over an AsyncStorage persistence layer |
 | Forms | TanStack Form with Zod schemas passed directly to `validators` |
