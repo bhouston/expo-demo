@@ -1,98 +1,137 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { FlashList } from "@shopify/flash-list";
+import { router, Stack } from "expo-router";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { TodoItem } from "@/components/todo-item";
+import { useThemeColors } from "@/constants/theme";
+import { useDeleteTodo, useTodos } from "@/hooks/use-todos";
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+export default function TodoListScreen() {
+  const colors = useThemeColors();
+  const insets = useSafeAreaInsets();
+  const { data: todos = [], isPending } = useTodos();
+  const deleteTodo = useDeleteTodo();
+
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <Pressable
+              onPress={() => router.push("/settings")}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel="Open settings"
+            >
+              <Ionicons
+                name="settings-outline"
+                size={22}
+                color={colors.tint}
+              />
+            </Pressable>
+          ),
+        }}
+      />
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+      {isPending ? (
+        <View style={styles.centered}>
+          <ActivityIndicator />
+        </View>
+      ) : (
+        <FlashList
+          data={todos}
+          keyExtractor={(todo) => todo.id}
+          renderItem={({ item }) => (
+            <TodoItem todo={item} onDelete={(id) => deleteTodo.mutate(id)} />
+          )}
+          ItemSeparatorComponent={() => (
+            <View
+              style={[styles.separator, { backgroundColor: colors.separator }]}
+            />
+          )}
+          contentContainerStyle={{ paddingBottom: insets.bottom + 96 }}
+          ListEmptyComponent={
+            <View style={styles.empty}>
+              <Ionicons
+                name="checkmark-done-circle-outline"
+                size={48}
+                color={colors.secondaryText}
+              />
+              <Text style={[styles.emptyTitle, { color: colors.text }]}>
+                No to-dos yet
+              </Text>
+              <Text
+                style={[styles.emptySubtitle, { color: colors.secondaryText }]}
+              >
+                Tap + to add your first to-do.
+              </Text>
+            </View>
+          }
+        />
+      )}
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+      <Pressable
+        onPress={() => router.push("/add")}
+        accessibilityRole="button"
+        accessibilityLabel="Add a to-do"
+        style={({ pressed }) => [
+          styles.fab,
+          {
+            backgroundColor: colors.tint,
+            bottom: insets.bottom + 24,
+            right: insets.right + 24,
+            opacity: pressed ? 0.8 : 1,
+          },
+        ]}
+      >
+        <Ionicons name="add" size={32} color={colors.fabText} />
+      </Pressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
   },
-  safeArea: {
+  centered: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: 16,
   },
-  title: {
-    textAlign: 'center',
+  empty: {
+    alignItems: "center",
+    gap: 8,
+    paddingTop: 96,
+    paddingHorizontal: 32,
   },
-  code: {
-    textTransform: 'uppercase',
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: "600",
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  emptySubtitle: {
+    fontSize: 15,
+    textAlign: "center",
+  },
+  fab: {
+    position: "absolute",
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
   },
 });

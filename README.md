@@ -1,6 +1,48 @@
-# Welcome to your Expo app 👋
+# Expo TanStack Todo
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A simple local-first to-do list app built with [Expo](https://expo.dev) (SDK 56) to demonstrate modern Expo + TanStack best practices. No user account is required — all data lives on the device in AsyncStorage.
+
+## Features
+
+- To-do list with title and optional description
+- Add to-dos via a floating `+` button that opens a modal form
+- Swipe a row left to reveal a Delete action (Gmail-style)
+- Settings page with:
+  - **Generate Data** — inserts 1000 fake to-dos (via faker) to test list performance
+  - **Delete All** — clears every to-do
+- Light and dark mode support
+
+## Stack and conventions
+
+| Concern | Choice |
+| --- | --- |
+| Framework | Expo SDK 56, expo-router (file-based routing, typed routes) |
+| Language | TypeScript (strict) |
+| Data fetching/cache | TanStack Query over an AsyncStorage persistence layer |
+| Forms | TanStack Form with Zod schemas passed directly to `validators` |
+| Validation | Zod 4 (`src/lib/schema.ts` is the single source of truth for types) |
+| List rendering | `@shopify/flash-list` v2 (recycling list, handles 1000+ rows) |
+| Swipe gestures | `ReanimatedSwipeable` from react-native-gesture-handler |
+| Memoization | React Compiler (enabled in `app.json` `experiments.reactCompiler`); no manual `useMemo`/`useCallback`/`React.memo` |
+| Safe areas | `useSafeAreaInsets` for FAB/list/form padding (camera cutouts, home indicator) |
+| Keyboard | `KeyboardAvoidingView` around the add-todo form |
+
+## Project structure
+
+```
+src/
+  app/            # expo-router screens (only screens/layouts live here)
+    _layout.tsx   # GestureHandlerRootView, QueryClientProvider, theme, Stack
+    index.tsx     # To-do list, FAB, settings button
+    add.tsx       # Modal form (TanStack Form + Zod)
+    settings.tsx  # Generate Data / Delete All
+  components/     # Reusable UI (TodoItem with swipe-to-delete)
+  constants/      # Theme palette (light/dark)
+  hooks/          # TanStack Query hooks (use-todos.ts)
+  lib/            # Zod schemas and AsyncStorage CRUD (todo-storage.ts)
+```
+
+Data flow: screens call hooks in `src/hooks/use-todos.ts`; mutations call the storage functions in `src/lib/todo-storage.ts`, which return the full updated list so the query cache is updated in place (no refetch needed).
 
 ## Get started
 
@@ -16,41 +58,11 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+Then open it in a development build, the iOS Simulator, an Android emulator, or Expo Go.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Useful commands
 
 ```bash
-npm run reset-project
+npx tsc --noEmit   # typecheck
+npm run lint       # ESLint (includes React Compiler rules)
 ```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
