@@ -25,18 +25,28 @@ export default function TodoListScreen() {
       <Stack.Screen
         options={{
           headerRight: () => (
-            <Pressable
-              onPress={() => router.push("/settings")}
-              accessibilityRole="button"
-              accessibilityLabel="Open settings"
-              style={styles.settingsButton}
-            >
-              <Ionicons
-                name="settings-outline"
-                size={22}
-                color={colors.tint}
-              />
-            </Pressable>
+            <View style={styles.headerButtons}>
+              <Pressable
+                onPress={() => router.push("/dictate")}
+                accessibilityRole="button"
+                accessibilityLabel="Open dictation"
+                style={styles.settingsButton}
+              >
+                <Ionicons name="mic-outline" size={22} color={colors.tint} />
+              </Pressable>
+              <Pressable
+                onPress={() => router.push("/settings")}
+                accessibilityRole="button"
+                accessibilityLabel="Open settings"
+                style={styles.settingsButton}
+              >
+                <Ionicons
+                  name="settings-outline"
+                  size={22}
+                  color={colors.tint}
+                />
+              </Pressable>
+            </View>
           ),
         }}
       />
@@ -110,6 +120,9 @@ const styles = StyleSheet.create({
   separator: {
     height: StyleSheet.hairlineWidth,
     marginLeft: 16,
+  },
+  headerButtons: {
+    flexDirection: "row",
   },
   // Explicit square frame works around off-center header buttons inside the
   // iOS 26 glass capsule (react-native-screens #2990, fixed natively in 4.21+).

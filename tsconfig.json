@@ -8,6 +8,20 @@
       ],
       "@/assets/*": [
         "./assets/*"
+      ],
+      // whisper.rn's exports map has no "." entry and invalid wildcard
+      // targets, so both Metro and TypeScript fall back to file paths. The
+      // app imports from whisper.rn/src/* (per the whisper.rn README); these
+      // mappings point TypeScript at the prebuilt .d.ts files instead of
+      // typechecking the library sources.
+      "whisper.rn": [
+        "./node_modules/whisper.rn/lib/typescript/index.d.ts"
+      ],
+      "whisper.rn/src/realtime-transcription": [
+        "./node_modules/whisper.rn/lib/typescript/realtime-transcription/index.d.ts"
+      ],
+      "whisper.rn/src/realtime-transcription/adapters/*": [
+        "./node_modules/whisper.rn/lib/typescript/realtime-transcription/adapters/*"
       ]
     }
   },

@@ -27,6 +27,7 @@ export default function RootLayout() {
               options={{ title: "New To Do", presentation: "modal" }}
             />
             <Stack.Screen name="settings" options={{ title: "Settings" }} />
+            <Stack.Screen name="dictate" options={{ title: "Dictate" }} />
           </Stack>
           <StatusBar style="auto" />
         </ThemeProvider>

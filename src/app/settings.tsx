@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeColors } from "@/constants/theme";
 import { useDeleteAllTodos, useGenerateTodos } from "@/hooks/use-todos";
 import { confirmAction } from "@/lib/confirm";
+import { deleteDownloadedModels } from "@/lib/whisper-models";
 
 const GENERATED_COUNT = 1000;
 
@@ -36,6 +37,19 @@ export default function SettingsScreen() {
       confirmLabel: "Delete All",
       destructive: true,
       onConfirm: () => deleteAll.mutate(undefined),
+    });
+  };
+
+  const confirmDeleteModels = () => {
+    confirmAction({
+      title: "Delete Speech Model",
+      message:
+        "This removes the downloaded Whisper model used for dictation. It will be re-downloaded the next time you dictate.",
+      confirmLabel: "Delete",
+      destructive: true,
+      onConfirm: () => {
+        deleteDownloadedModels().catch(() => {});
+      },
     });
   };
 
@@ -91,6 +105,31 @@ export default function SettingsScreen() {
         Generate Data inserts {GENERATED_COUNT} fake to-dos to test list
         performance.
       </Text>
+
+      <Text
+        style={[
+          styles.sectionHeader,
+          styles.sectionHeaderSpaced,
+          { color: colors.secondaryText },
+        ]}
+      >
+        Dictation
+      </Text>
+      <View style={[styles.group, { backgroundColor: colors.card }]}>
+        <Pressable
+          onPress={confirmDeleteModels}
+          accessibilityRole="button"
+          style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+        >
+          <Ionicons name="mic-off-outline" size={22} color={colors.destructive} />
+          <Text style={[styles.rowText, { color: colors.destructive }]}>
+            Delete Speech Model
+          </Text>
+        </Pressable>
+      </View>
+      <Text style={[styles.footnote, { color: colors.secondaryText }]}>
+        Frees the ~150 MB Whisper model downloaded for on-device dictation.
+      </Text>
     </View>
   );
 }
@@ -108,6 +147,9 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginBottom: 8,
     marginLeft: 12,
+  },
+  sectionHeaderSpaced: {
+    marginTop: 32,
   },
   group: {
     borderRadius: 12,

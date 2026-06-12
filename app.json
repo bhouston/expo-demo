@@ -8,7 +8,12 @@
     "scheme": "expodemo",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.bhouston.expodemo",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "The microphone is used to dictate text on the Dictate page. Audio is transcribed on-device and never leaves your device."
+      }
     },
     "android": {
       "adaptiveIcon": {
